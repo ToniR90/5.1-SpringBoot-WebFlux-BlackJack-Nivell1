@@ -2,6 +2,9 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    active: dev
+
   application:
     name: blackjack-api
 
@@ -28,7 +31,7 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
-spring doc:
+springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
