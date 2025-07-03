@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db-server:3306/blackjack
+    username: prod_user
+    password: súpersecret123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  data:
+    mongodb:
+      uri: mongodb://prod-mongo:27017/blackjack
+      database: blackjack
+
+  main:
+    allow-bean-definition-overriding: false
+
+springdoc:
+  swagger-ui:
+    enabled: false  # desactivem Swagger a producció
+
+logging:
+  level:
+    root: WARN
