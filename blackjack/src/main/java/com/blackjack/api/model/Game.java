@@ -23,7 +23,7 @@ public class Game {
     private String id;
 
     @NotNull(message = "Player ID cannot be null")
-    private Long playerId;
+    private String playerId;
 
     @Builder.Default
     private List<Card> playerCards = new ArrayList<>();
@@ -34,31 +34,17 @@ public class Game {
     private GameStatus gameStatus;
     private int playerFinalScore;
     private int dealerFinalScore;
+
+    @Builder.Default
     private LocalDateTime playedAt = LocalDateTime.now();
 
     public enum GameStatus{
         WIN , LOSS , DRAW
     }
 
-    public boolean playerWins(){
-        return gameStatus == GameStatus.WIN;
-    }
-
-    public boolean isDraw(){
-        return gameStatus == GameStatus.DRAW;
-    }
-
-    public boolean dealerWins(){
-        return gameStatus == GameStatus.LOSS;
-    }
-
-    public boolean isDealerBlackjack(){
-        return dealerCards.size() == 2 && dealerFinalScore == 21;
-    }
-
     @Override
     public String toString() {
-        return "Game id: " + id + "\n" +
+        return  "Game id: " + id + "\n" +
                 "Player Id: " + playerId + "\n" +
                 "Player Cards: " + playerCards + "\n" +
                 "Dealer Cards: " + dealerCards + "\n" +
