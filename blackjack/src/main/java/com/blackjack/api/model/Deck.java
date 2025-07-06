@@ -1,11 +1,12 @@
-package com.blackjack.api.game;
+package com.blackjack.api.model;
 
-import com.blackjack.api.model.Card;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Getter
 public class Deck {
 
     private final List<Card> deck = new ArrayList<>();
@@ -18,8 +19,8 @@ public class Deck {
         }
     }
 
-    public List<Card> getDeck(){
-        return deck;
+    public Deck(List<Card> remainingCards) {
+        this.deck.addAll(remainingCards);
     }
 
     public void shuffle(){
@@ -33,8 +34,8 @@ public class Deck {
         return deck.remove(0);
     }
 
-    public int remainingCards() {
-        return deck.size();
+    public List<Card> remainingCards() {
+        return new ArrayList<>(deck);
     }
 
     public boolean isEmpty(){

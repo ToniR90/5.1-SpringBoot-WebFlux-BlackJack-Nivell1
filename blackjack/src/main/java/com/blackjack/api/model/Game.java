@@ -1,5 +1,6 @@
 package com.blackjack.api.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,11 +20,11 @@ import java.util.List;
 @Document(collection = "games")
 public class Game {
 
-    @Id
+    @org.springframework.data.annotation.Id
     private String id;
 
     @NotNull(message = "Player ID cannot be null")
-    private String playerId;
+    private Long playerId;
 
     @Builder.Default
     private List<Card> playerCards = new ArrayList<>();
@@ -31,15 +32,19 @@ public class Game {
     @Builder.Default
     private List<Card> dealerCards = new ArrayList<>();
 
+    @Builder.Default
+    private List<Card> remainingDeck = new ArrayList<>();
+
     private GameStatus gameStatus;
     private int playerFinalScore;
     private int dealerFinalScore;
 
     @Builder.Default
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime playedAt = LocalDateTime.now();
 
     public enum GameStatus{
-        WIN , LOSS , DRAW
+        WIN , LOSS , DRAW , IN_PROGRESS
     }
 
     @Override

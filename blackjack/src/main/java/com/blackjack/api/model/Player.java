@@ -29,6 +29,7 @@ public class Player {
     @Column(name = "won_games" , nullable = false)
     private int wonGames = 0;
 
+    @Setter
     @Column(name = "victory_ratio" , nullable = false)
     private double victoryRatio;
 
