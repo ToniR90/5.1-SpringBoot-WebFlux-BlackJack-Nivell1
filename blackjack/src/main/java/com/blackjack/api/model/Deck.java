@@ -5,6 +5,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class Deck {
@@ -40,5 +41,12 @@ public class Deck {
 
     public boolean isEmpty(){
         return deck.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return deck.stream()
+                .map(Card::toString)
+                .collect(Collectors.joining(", "));
     }
 }

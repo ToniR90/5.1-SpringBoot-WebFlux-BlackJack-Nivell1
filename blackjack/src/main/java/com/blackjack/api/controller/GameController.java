@@ -31,6 +31,9 @@ public class GameController {
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
+    //get all games
+    //delete game(String id)
+
     @PutMapping("/{id}/hit")
     public Mono<ResponseEntity<GameResponse>> playerHits(@PathVariable String id) {
         return gameService.playerHits(id)

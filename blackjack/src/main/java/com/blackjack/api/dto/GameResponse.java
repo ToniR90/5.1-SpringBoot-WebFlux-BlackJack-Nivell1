@@ -19,7 +19,7 @@ public record GameResponse(
         return new GameResponse(
                 game.getId(),
                 game.getPlayerId(),
-                game.getStatus().name(),
+                game.getGameStatus().name(),
                 game.getPlayerCards().stream().map(Card::toString).toList(),
                 game.getPlayerFinalScore(),
                 game.getDealerCards().stream().map(Card::toString).toList(),

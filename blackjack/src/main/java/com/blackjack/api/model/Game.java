@@ -1,7 +1,6 @@
 package com.blackjack.api.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -46,14 +45,6 @@ public class Game {
     public enum GameStatus{
         WIN , LOSS , DRAW , IN_PROGRESS
     }
-
-    public GameStatus getStatus() {
-        return gameStatus;
-    }
-
-
-
-
 
     @Override
     public String toString() {

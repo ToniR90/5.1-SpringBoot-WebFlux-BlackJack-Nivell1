@@ -6,7 +6,7 @@ import com.blackjack.api.game.GameLogic;
 import com.blackjack.api.model.Card;
 import com.blackjack.api.model.Deck;
 import com.blackjack.api.model.Game;
-import com.blackjack.api.repository.GameRepository;
+import com.blackjack.api.repository.mongo.GameRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

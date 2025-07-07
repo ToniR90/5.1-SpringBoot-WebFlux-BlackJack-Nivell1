@@ -2,7 +2,7 @@ package com.blackjack.api.service;
 
 import com.blackjack.api.expection.ResourceNotFoundException;
 import com.blackjack.api.model.Player;
-import com.blackjack.api.repository.PlayerRepository;
+import com.blackjack.api.repository.r2dbc.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -15,14 +15,16 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
 
     public Mono<Player> createPlayer(String name){
-        Player newPlayer = new Player();
-        newPlayer.setName(name);
-        newPlayer.setPlayedGames(0);
-        newPlayer.setWonGames(0);
-        newPlayer.setVictoryRatio(0);
+        Player newPlayer = Player.builder()
+                .name(name)
+                .playedGames(0)
+                .wonGames(0)
+                .victoryRatio(0.0)
+                .build();
 
         return playerRepository.save(newPlayer);
     }
+
 
     public Mono<Player> getPlayerById(Long playerId) {
         return playerRepository.findById(playerId)

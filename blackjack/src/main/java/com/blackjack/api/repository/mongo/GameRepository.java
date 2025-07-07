@@ -1,4 +1,4 @@
-package com.blackjack.api.repository;
+package com.blackjack.api.repository.mongo;
 
 import com.blackjack.api.model.Game;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;

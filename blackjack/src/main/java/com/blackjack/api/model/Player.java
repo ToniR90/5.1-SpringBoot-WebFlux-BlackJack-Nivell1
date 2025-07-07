@@ -1,41 +1,32 @@
 package com.blackjack.api.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode
-@Entity
-@Table(name = "players")
+@Table("players")
 public class Player {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // R2DBC no genera automàticament si uses Long; pots passar null i deixar que el SGBD l’autogeneri si tens `AUTO_INCREMENT`
 
-    @Setter
     @NotBlank(message = "The name can't be empty")
-    @Column(name = "player_name" , nullable = false)
     private String name;
 
-    @Setter
-    @Column(name = "played_games" , nullable = false)
-    private int playedGames = 0;
-
-    @Setter
-    @Column(name = "won_games" , nullable = false)
-    private int wonGames = 0;
-
-    @Setter
-    @Column(name = "victory_ratio" , nullable = false)
+    private int playedGames;
+    private int wonGames;
     private double victoryRatio;
 
-    public void registerGame(boolean won){
+    public void registerGame(boolean won) {
         playedGames++;
-        if(won) wonGames++;
+        if (won) wonGames++;
         victoryRatio = (playedGames == 0) ? 0 : ((double) wonGames / playedGames) * 100;
     }
 
@@ -45,6 +36,6 @@ public class Player {
                 "Id: " + id + "\n" +
                 "Played Games: " + playedGames + "\n" +
                 "Won Games: " + wonGames + "\n" +
-                "Victory Ratio: " + String.format("%.2f" , victoryRatio) + " %";
+                "Victory Ratio: " + String.format("%.2f", victoryRatio) + " %";
     }
 }

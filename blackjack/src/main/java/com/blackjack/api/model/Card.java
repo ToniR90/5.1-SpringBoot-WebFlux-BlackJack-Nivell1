@@ -47,7 +47,6 @@ public class Card {
 
     @Override
     public String toString() {
-        return rank.name() + " of " + suit.name() + "\n" +
-                "Value: " + rank.getValue() + "\n";
+        return rank.name() + " of " + suit.name();
     }
 }
