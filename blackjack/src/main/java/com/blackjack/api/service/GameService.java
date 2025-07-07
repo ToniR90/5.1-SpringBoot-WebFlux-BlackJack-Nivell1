@@ -1,5 +1,7 @@
 package com.blackjack.api.service;
 
+import com.blackjack.api.expection.InvalidGameStateException;
+import com.blackjack.api.expection.ResourceNotFoundException;
 import com.blackjack.api.game.GameLogic;
 import com.blackjack.api.model.Card;
 import com.blackjack.api.model.Deck;
@@ -21,51 +23,56 @@ public class GameService {
     private final PlayerService playerService;
 
     public Mono<Game> startNewGame(Long playerId) {
-        Deck deck = new Deck();
-        deck.shuffle();
+        return playerService.getPlayerById(playerId)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Player doesn't exist")))
+                .flatMap(player -> {
+                    Deck deck = new Deck();
+                    deck.shuffle();
 
-        List<Card> playerHand = List.of(deck.drawCard() , deck.drawCard());
-        List<Card> dealerHand = List.of(deck.drawCard() , deck.drawCard());
+                    List<Card> playerHand = List.of(deck.drawCard() , deck.drawCard());
+                    List<Card> dealerHand = List.of(deck.drawCard() , deck.drawCard());
 
-        boolean playerBJ = gameLogic.isBlackjack(playerHand);
-        boolean dealerBJ = gameLogic.isBlackjack(dealerHand);
+                    boolean playerBJ = gameLogic.isBlackjack(playerHand);
+                    boolean dealerBJ = gameLogic.isBlackjack(dealerHand);
 
-        Game.GameStatus status;
-        if (playerBJ && dealerBJ) {
-            status = Game.GameStatus.DRAW;
-        } else if (playerBJ) {
-            status = Game.GameStatus.WIN;
-        } else if (dealerBJ) {
-            status = Game.GameStatus.LOSS;
-        } else {
-            status = Game.GameStatus.IN_PROGRESS;
-        }
+                    Game.GameStatus status;
+                    if (playerBJ && dealerBJ) {
+                        status = Game.GameStatus.DRAW;
+                    } else if (playerBJ) {
+                        status = Game.GameStatus.WIN;
+                    } else if (dealerBJ) {
+                        status = Game.GameStatus.LOSS;
+                    } else {
+                        status = Game.GameStatus.IN_PROGRESS;
+                    }
 
-        List<Card> remainingCards = deck.remainingCards();
+                    List<Card> remainingCards = deck.remainingCards();
 
-        Game game = Game.builder()
-                .playerId(playerId)
-                .playerCards(playerHand)
-                .dealerCards(dealerHand)
-                .playerFinalScore(gameLogic.calculateHandValue(playerHand))
-                .dealerFinalScore(gameLogic.calculateHandValue(dealerHand))
-                .remainingDeck(remainingCards)
-                .gameStatus(status)
-                .build();
+                    Game game = Game.builder()
+                            .playerId(playerId)
+                            .playerCards(playerHand)
+                            .dealerCards(dealerHand)
+                            .playerFinalScore(gameLogic.calculateHandValue(playerHand))
+                            .dealerFinalScore(gameLogic.calculateHandValue(dealerHand))
+                            .remainingDeck(remainingCards)
+                            .gameStatus(status)
+                            .build();
 
-        Mono<Game> savedGame = gameRepository.save(game);
+                    Mono<Game> savedGame = gameRepository.save(game);
 
-        if (status != Game.GameStatus.IN_PROGRESS) {
-            boolean playerWon = status == Game.GameStatus.WIN;
-            return playerService.registerGameResult(playerId, playerWon)
-                    .then(savedGame);
-        }
-        return savedGame;
+                    if (status != Game.GameStatus.IN_PROGRESS) {
+                        boolean playerWon = status == Game.GameStatus.WIN;
+                        return playerService.registerGameResult(playerId, playerWon)
+                                .then(savedGame);
+                    }
+                    return savedGame;
+                });
+
     }
 
     public Mono<Game> playerStands(String gameId){
         return gameRepository.findById(gameId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Game not found")))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Game not found")))
                 .flatMap(game -> {
                     Deck deck = new Deck(game.getRemainingDeck());
 
@@ -88,17 +95,17 @@ public class GameService {
 
     public Mono<Game> playerHits(String gameId) {
         return gameRepository.findById(gameId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Game not found")))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Game not found")))
                 .flatMap(game -> {
                     if (game.getGameStatus() != Game.GameStatus.IN_PROGRESS) {
-                        return Mono.error(new IllegalStateException("Game is already completed"));
+                        return Mono.error(new InvalidGameStateException("Game is already completed"));
                     }
 
                     Deck deck = new Deck(game.getRemainingDeck());
 
                     List<Card> playerHand = new ArrayList<>(game.getPlayerCards());
                     if (deck.isEmpty()) {
-                        return Mono.error(new IllegalStateException("No more cards in the deck"));
+                        return Mono.error(new InvalidGameStateException("No more cards in the deck"));
                     }
 
                     playerHand.add(deck.drawCard());
@@ -116,5 +123,10 @@ public class GameService {
                     game.setGameStatus(Game.GameStatus.IN_PROGRESS);
                     return gameRepository.save(game);
                 });
+    }
+
+    public Mono<Game> getGameById(String gameId) {
+        return gameRepository.findById(gameId)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Player not found")));
     }
 }

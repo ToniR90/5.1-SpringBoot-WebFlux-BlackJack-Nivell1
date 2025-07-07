@@ -47,6 +47,14 @@ public class Game {
         WIN , LOSS , DRAW , IN_PROGRESS
     }
 
+    public GameStatus getStatus() {
+        return gameStatus;
+    }
+
+
+
+
+
     @Override
     public String toString() {
         return  "Game id: " + id + "\n" +
