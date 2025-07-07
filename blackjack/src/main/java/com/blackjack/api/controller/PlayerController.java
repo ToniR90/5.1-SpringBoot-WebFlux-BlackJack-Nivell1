@@ -2,15 +2,13 @@ package com.blackjack.api.controller;
 
 
 import com.blackjack.api.dto.PlayerRequest;
-import com.blackjack.api.model.Player;
+import com.blackjack.api.dto.PlayerResponse;
 import com.blackjack.api.service.PlayerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -25,8 +23,23 @@ public class PlayerController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<Player>> createPlayer(@Valid @RequestBody PlayerRequest playerRequest) {
+    public Mono<ResponseEntity<PlayerResponse>> createPlayer(@Valid @RequestBody PlayerRequest playerRequest) {
         return playerService.createPlayer(playerRequest.getName())
-                .map(savedPlayer -> ResponseEntity.ok().body(savedPlayer));
+                .map(PlayerResponse::from)
+                .map(ResponseEntity::ok);
+    }
+
+    @GetMapping("/{id}")
+    public Mono<ResponseEntity<PlayerResponse>> getPlayerById(@PathVariable Long id) {
+        return playerService.getPlayerById(id)
+                .map(PlayerResponse::from)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
+    @GetMapping("/ranking")
+    public Flux<PlayerResponse> getRanking() {
+        return playerService.getRanking()
+                .map(PlayerResponse::from);
     }
 }
