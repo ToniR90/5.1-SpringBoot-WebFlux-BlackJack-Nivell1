@@ -9,6 +9,7 @@ import com.blackjack.api.model.Game;
 import com.blackjack.api.repository.mongo.GameRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -128,5 +129,13 @@ public class GameService {
     public Mono<Game> getGameById(String gameId) {
         return gameRepository.findById(gameId)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Player not found")));
+    }
+
+    public Flux<Game> getAllGames() {
+        return gameRepository.findAll();
+    }
+
+    public Mono<Void> deleteGame(String gameId) {
+        return gameRepository.deleteById(gameId);
     }
 }

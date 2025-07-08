@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -31,8 +32,11 @@ public class GameController {
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
-    //get all games
-    //delete game(String id)
+    @GetMapping
+    public Flux<ResponseEntity<GameResponse>> getAllGames() {
+        return gameService.getAllGames()
+                .map(game -> ResponseEntity.ok(GameResponse.from(game)));
+    }
 
     @PutMapping("/{id}/hit")
     public Mono<ResponseEntity<GameResponse>> playerHits(@PathVariable String id) {
@@ -46,5 +50,11 @@ public class GameController {
         return gameService.playerStands(id)
                 .map(GameResponse::from)
                 .map(ResponseEntity::ok);
+    }
+
+    @DeleteMapping("/{gameId}")
+    public Mono<ResponseEntity<Void>> deleteGame(@PathVariable String gameId) {
+        return gameService.deleteGame(gameId)
+                .then(Mono.just(ResponseEntity.noContent().build()));
     }
 }
