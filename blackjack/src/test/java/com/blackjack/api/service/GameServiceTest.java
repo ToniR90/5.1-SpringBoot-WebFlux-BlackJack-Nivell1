@@ -16,8 +16,7 @@ import reactor.test.StepVerifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +57,25 @@ class GameServiceTest {
 
     @Test
     void playerStands() {
+        String gameId = "gameStand123";
+        Game game = Game.builder()
+                .playerId(1L)
+                .dealerCards(new ArrayList<>())
+                .playerCards(List.of(new Card(Card.Suit.HEARTS, Card.Rank.JACK)))
+                .remainingDeck(List.of(new Card(Card.Suit.DIAMONDS, Card.Rank.SEVEN)))
+                .build();
+
+        when(gameRepository.findById(gameId)).thenReturn(Mono.just(game));
+        when(gameLogic.shouldDealerDraw(anyList())).thenReturn(true, false);
+        when(gameLogic.calculateHandValue(anyList())).thenReturn(17);
+        when(gameLogic.determineGameOutcome(anyList(), anyList())).thenReturn(Game.GameStatus.WIN);
+        when(playerService.registerGameResult(anyLong(), eq(true))).thenReturn(Mono.empty());
+        when(gameRepository.save(any(Game.class))).thenReturn(Mono.just(game));
+
+        StepVerifier.create(gameService.playerStands(gameId))
+                .expectNext(game)
+                .verifyComplete();
+
     }
 
     @Test
