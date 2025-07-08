@@ -13,6 +13,7 @@ public record GameResponse(
         int playerScore,
         List<String> dealerHand,
         int dealerScore
+
 ) {
 
     public static GameResponse from(Game game) {
