@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import java.util.ArrayList;
@@ -110,6 +111,25 @@ class GameServiceTest {
 
     @Test
     void getAllGames() {
+        String gameId;
+        Game game1 = Game.builder()
+                .playerId(1L)
+                .gameStatus(Game.GameStatus.WIN)
+                .build();
+
+        Game game2 = Game.builder()
+                .playerId(2L)
+                .gameStatus(Game.GameStatus.LOSS)
+                .build();
+        game1.setId("game1");
+        game2.setId("game2");
+
+        when(gameRepository.findAll()).thenReturn(Flux.just(game1, game2));
+
+        StepVerifier.create(gameService.getAllGames())
+                .expectNext(game1)
+                .expectNext(game2)
+                .verifyComplete();
     }
 
     @Test
