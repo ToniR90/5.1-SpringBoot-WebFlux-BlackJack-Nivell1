@@ -12,12 +12,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 class GameServiceTest {
@@ -43,7 +42,6 @@ class GameServiceTest {
                 .gameStatus(Game.GameStatus.IN_PROGRESS)
                 .build();
 
-
         when(playerService.getPlayerById(playerId)).thenReturn(Mono.just(new Player()));
         when(gameRepository.save(any(Game.class))).thenReturn(Mono.just(mockGame));
         when(gameLogic.isBlackjack(anyList())).thenReturn(false);
@@ -52,8 +50,8 @@ class GameServiceTest {
         StepVerifier.create(gameService.startNewGame(playerId))
                 .expectNext(mockGame)
                 .verifyComplete();
-
     }
+
 
     @Test
     void playerStands() {
@@ -75,8 +73,8 @@ class GameServiceTest {
         StepVerifier.create(gameService.playerStands(gameId))
                 .expectNext(game)
                 .verifyComplete();
-
     }
+
 
     @Test
     void playerHits() {
@@ -97,8 +95,17 @@ class GameServiceTest {
                 .verifyComplete();
     }
 
+
     @Test
     void getGameById() {
+        String gameId = "abc";
+        Game game = new Game();
+
+        when(gameRepository.findById(gameId)).thenReturn(Mono.just(game));
+
+        StepVerifier.create(gameService.getGameById(gameId))
+                .expectNext(game)
+                .verifyComplete();
     }
 
     @Test
@@ -107,5 +114,10 @@ class GameServiceTest {
 
     @Test
     void deleteGame() {
+        String gameId = "abc";
+        when(gameRepository.deleteById(gameId)).thenReturn(Mono.empty());
+
+        StepVerifier.create(gameService.deleteGame(gameId))
+                .verifyComplete();
     }
 }
