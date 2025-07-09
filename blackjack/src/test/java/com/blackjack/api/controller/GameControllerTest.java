@@ -18,11 +18,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 import java.util.List;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
@@ -129,9 +126,31 @@ class GameControllerTest {
 
     @Test
     void playerHits() {
-    }
+    Game game = Game.builder()
+            .playerId(1L)
+            .gameStatus(Game.GameStatus.IN_PROGRESS)
+            .playerCards(List.of(new Card(Card.Suit.HEARTS, Card.Rank.TEN)))
+            .dealerCards(List.of(new Card(Card.Suit.SPADES, Card.Rank.EIGHT)))
+            .remainingDeck(List.of(new Card(Card.Suit.HEARTS, Card.Rank.ACE)))
+            .playerFinalScore(18)
+            .dealerFinalScore(17)
+            .build();
+    game.setId("h123");
 
-    @Test
+    when(gameRepository.findById("h123")).thenReturn(Mono.just(game));
+    when(gameLogic.calculateHandValue(anyList())).thenReturn(18);
+    when(gameLogic.isBust(anyList())).thenReturn(false);
+    when(gameRepository.save(any())).thenReturn(Mono.just(game));
+
+    webTestClient.put().uri("/games/h123/hit")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(GameResponse.class)
+        .value(response -> assertThat(response.gameId()).isEqualTo("h123"));
+}
+
+
+@Test
     void playerStands() {
     }
 
