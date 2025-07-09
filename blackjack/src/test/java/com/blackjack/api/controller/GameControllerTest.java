@@ -42,6 +42,9 @@ class GameControllerTest {
     @MockitoBean
     PlayerService playerService;
 
+    @MockitoBean
+    GameService gameService;
+
     @Test
     void startGame() {
         GameRequest request = new GameRequest(1L);
@@ -56,7 +59,7 @@ class GameControllerTest {
                 .name("Toni")
                 .build();
 
-        when(playerService.getPlayerById(1L)).thenReturn(Mono.just(mockPlayer)); // simulat
+        when(playerService.getPlayerById(1L)).thenReturn(Mono.just(mockPlayer));
         when(gameLogic.isBlackjack(anyList())).thenReturn(false);
         when(gameLogic.calculateHandValue(anyList())).thenReturn(13);
         when(gameRepository.save(any())).thenReturn(Mono.just(game));
@@ -70,6 +73,22 @@ class GameControllerTest {
 
     @Test
     void getGame() {
+        Game game = Game.builder()
+                .playerId(1L)
+                .gameStatus(Game.GameStatus.IN_PROGRESS)
+                .build();
+        game.setId("123");
+
+        when(gameService.getGameById("123")).thenReturn(Mono.just(game));
+
+        webTestClient.get().uri("/games/123")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(GameResponse.class)
+                .value(response -> {
+                    assertThat(response.gameId()).isEqualTo("123");
+                    assertThat(response.playerId()).isEqualTo(1L);
+                });
     }
 
     @Test
