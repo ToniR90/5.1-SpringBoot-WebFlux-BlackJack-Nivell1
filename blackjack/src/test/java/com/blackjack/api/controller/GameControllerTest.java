@@ -31,6 +31,9 @@ class GameControllerTest {
     @Autowired
     WebTestClient webTestClient;
 
+    @Autowired
+    GameService gameService;
+
     @MockitoBean
     GameRepository gameRepository;
 
@@ -149,12 +152,43 @@ class GameControllerTest {
         .value(response -> assertThat(response.gameId()).isEqualTo("h123"));
 }
 
-
-@Test
+    @Test
     void playerStands() {
+        Game game = Game.builder()
+                .playerId(1L)
+                .gameStatus(Game.GameStatus.IN_PROGRESS)
+                .playerCards(List.of(new Card(Card.Suit.HEARTS, Card.Rank.TEN), new Card(Card.Suit.DIAMONDS, Card.Rank.EIGHT)))
+                .dealerCards(List.of(new Card(Card.Suit.CLUBS, Card.Rank.SEVEN)))
+                .remainingDeck(List.of(new Card(Card.Suit.SPADES, Card.Rank.KING)))
+                .playerFinalScore(18)
+                .dealerFinalScore(0)
+                .build();
+        game.setId("s456");
+
+        when(gameRepository.findById("s456")).thenReturn(Mono.just(game));
+        when(gameLogic.shouldDealerDraw(anyList())).thenReturn(true, false);
+        when(gameLogic.calculateHandValue(anyList())).thenReturn(17);
+        when(gameLogic.determineGameOutcome(anyList(), anyList())).thenReturn(Game.GameStatus.WIN);
+        when(playerService.registerGameResult(1L, true)).thenReturn(Mono.empty());
+        when(gameRepository.save(any())).thenReturn(Mono.just(game));
+
+        webTestClient.put().uri("/games/s456/stand")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(GameResponse.class)
+                .value(response -> {
+                    assertThat(response.gameId()).isEqualTo("s456");
+                    assertThat(response.status()).isEqualTo("WIN");
+                    assertThat(response.playerId()).isEqualTo(1L);
+                });
     }
 
     @Test
     void deleteGame() {
+        when(gameService.deleteGame("del123")).thenReturn(Mono.empty());
+
+        webTestClient.delete().uri("/games/del123")
+                .exchange()
+                .expectStatus().isNoContent();
     }
 }
