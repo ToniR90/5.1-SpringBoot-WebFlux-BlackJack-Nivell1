@@ -46,9 +46,6 @@ class GameControllerTest {
     @MockitoBean
     PlayerService playerService;
 
-    @MockitoBean
-    GameService gameService;
-
     @Test
     void startGame() {
         GameRequest request = new GameRequest(1L);
@@ -83,7 +80,7 @@ class GameControllerTest {
                 .build();
         game.setId("123");
 
-        when(gameService.getGameById("123")).thenReturn(Mono.just(game));
+        when(gameRepository.findById("123")).thenReturn(Mono.just(game));
 
         webTestClient.get().uri("/games/123")
                 .exchange()
@@ -117,7 +114,7 @@ class GameControllerTest {
                 .build();
         game2.setId("def");
 
-        when(gameService.getAllGames()).thenReturn(Flux.just(game , game2));
+        when(gameRepository.findAll()).thenReturn(Flux.just(game , game2));
 
         webTestClient.get().uri("/games")
                 .exchange()
