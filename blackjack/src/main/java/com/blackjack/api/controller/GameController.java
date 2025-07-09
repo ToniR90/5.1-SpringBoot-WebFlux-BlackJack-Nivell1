@@ -33,9 +33,9 @@ public class GameController {
     }
 
     @GetMapping
-    public Flux<ResponseEntity<GameResponse>> getAllGames() {
+    public Flux<GameResponse> getAllGames() {
         return gameService.getAllGames()
-                .map(game -> ResponseEntity.ok(GameResponse.from(game)));
+                .map(GameResponse::from);
     }
 
     @PutMapping("/{id}/hit")

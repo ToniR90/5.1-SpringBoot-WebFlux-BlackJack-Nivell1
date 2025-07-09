@@ -3,6 +3,7 @@ package com.blackjack.api.controller;
 import com.blackjack.api.dto.GameRequest;
 import com.blackjack.api.dto.GameResponse;
 import com.blackjack.api.game.GameLogic;
+import com.blackjack.api.model.Card;
 import com.blackjack.api.model.Game;
 import com.blackjack.api.model.Player;
 import com.blackjack.api.repository.mongo.GameRepository;
@@ -15,7 +16,10 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,6 +97,37 @@ class GameControllerTest {
 
     @Test
     void getAllGames() {
+        Game game = Game.builder()
+                .playerId(1L)
+                .gameStatus(Game.GameStatus.IN_PROGRESS)
+                .playerCards(List.of(new Card(Card.Suit.HEARTS, Card.Rank.TEN)))
+                .dealerCards(List.of(new Card(Card.Suit.SPADES, Card.Rank.NINE)))
+                .playerFinalScore(10)
+                .dealerFinalScore(9)
+                .build();
+        game.setId("abc");
+
+        Game game2 = Game.builder()
+                .playerId(2L)
+                .gameStatus(Game.GameStatus.WIN)
+                .playerCards(List.of(new Card(Card.Suit.DIAMONDS, Card.Rank.ACE)))
+                .dealerCards(List.of(new Card(Card.Suit.CLUBS, Card.Rank.FIVE)))
+                .playerFinalScore(21)
+                .dealerFinalScore(15)
+                .build();
+        game2.setId("def");
+
+        when(gameService.getAllGames()).thenReturn(Flux.just(game , game2));
+
+        webTestClient.get().uri("/games")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(GameResponse.class)
+                .hasSize(2)
+                .value(list -> {
+                    assertThat(list.get(0).gameId()).isEqualTo("abc");
+                    assertThat(list.get(1).gameId()).isEqualTo("def");
+                });
     }
 
     @Test
