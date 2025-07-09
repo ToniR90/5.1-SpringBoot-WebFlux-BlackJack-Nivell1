@@ -42,6 +42,4 @@ public class PlayerController {
         return playerService.getRanking()
                 .map(PlayerResponse::from);
     }
-
-    //canviar nom player
 }
