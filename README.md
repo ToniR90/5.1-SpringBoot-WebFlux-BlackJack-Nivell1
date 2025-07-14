@@ -40,9 +40,10 @@ A `GlobalExceptionHandler` class handles all uncaught exceptions across the appl
 ### ✅ Swagger
 
 - Swagger documentation
-´´´bash
+  
+```bash
 http://localhost:8080/swagger-ui/index.html
-´´´
+```
 
 ---
 
