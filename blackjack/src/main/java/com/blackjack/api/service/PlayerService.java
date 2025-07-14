@@ -1,6 +1,7 @@
 package com.blackjack.api.service;
 
 import com.blackjack.api.exception.ResourceNotFoundException;
+import com.blackjack.api.model.Game;
 import com.blackjack.api.model.Player;
 import com.blackjack.api.repository.r2dbc.PlayerRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,10 @@ public class PlayerService {
     public Mono<Player> getPlayerById(Long playerId) {
         return playerRepository.findById(playerId)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Player not found")));
+    }
+
+    public Flux<Player> getAllPlayers() {
+        return playerRepository.findAll();
     }
 
     public Flux<Player> getRanking() {

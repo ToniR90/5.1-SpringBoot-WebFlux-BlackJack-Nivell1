@@ -15,7 +15,7 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Player {
 
     @Id
-    private Long id; // R2DBC no genera automàticament si uses Long; pots passar null i deixar que el SGBD l’autogeneri si tens `AUTO_INCREMENT`
+    private Long id;
 
     @NotBlank(message = "The name can't be empty")
     private String name;

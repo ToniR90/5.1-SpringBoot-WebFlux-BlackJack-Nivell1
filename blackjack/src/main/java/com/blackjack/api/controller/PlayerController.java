@@ -1,6 +1,7 @@
 package com.blackjack.api.controller;
 
 
+import com.blackjack.api.dto.GameResponse;
 import com.blackjack.api.dto.PlayerRequest;
 import com.blackjack.api.dto.PlayerResponse;
 import com.blackjack.api.service.PlayerService;
@@ -35,6 +36,12 @@ public class PlayerController {
                 .map(PlayerResponse::from)
                 .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
+    @GetMapping
+    public Flux<PlayerResponse> getAllGames() {
+        return playerService.getAllPlayers()
+                .map(PlayerResponse::from);
     }
 
     @GetMapping("/ranking")
