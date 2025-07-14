@@ -26,7 +26,6 @@ public class PlayerService {
         return playerRepository.save(newPlayer);
     }
 
-
     public Mono<Player> getPlayerById(Long playerId) {
         return playerRepository.findById(playerId)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Player not found")));
