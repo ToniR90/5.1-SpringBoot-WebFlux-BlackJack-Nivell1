@@ -39,7 +39,7 @@ public class PlayerController {
     }
 
     @GetMapping
-    public Flux<PlayerResponse> getAllGames() {
+    public Flux<PlayerResponse> getAllPlayers() {
         return playerService.getAllPlayers()
                 .map(PlayerResponse::from);
     }
@@ -49,6 +49,4 @@ public class PlayerController {
         return playerService.getRanking()
                 .map(PlayerResponse::from);
     }
-
-    //canviar nom player
 }
