@@ -1,4 +1,4 @@
-package com.blackjack.api.expection;
+package com.blackjack.api.exception;
 
 public class InvalidGameStateException extends RuntimeException {
     public InvalidGameStateException(String message) {

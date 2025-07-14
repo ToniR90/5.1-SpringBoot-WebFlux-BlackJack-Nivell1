@@ -1,4 +1,4 @@
-package com.blackjack.api.expection;
+package com.blackjack.api.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

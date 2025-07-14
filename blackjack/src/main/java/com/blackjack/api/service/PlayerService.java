@@ -1,6 +1,6 @@
 package com.blackjack.api.service;
 
-import com.blackjack.api.expection.ResourceNotFoundException;
+import com.blackjack.api.exception.ResourceNotFoundException;
 import com.blackjack.api.model.Player;
 import com.blackjack.api.repository.r2dbc.PlayerRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.blackjack.api.expection;
+package com.blackjack.api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

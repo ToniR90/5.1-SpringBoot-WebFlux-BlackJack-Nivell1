@@ -1,7 +1,7 @@
 package com.blackjack.api.service;
 
-import com.blackjack.api.expection.InvalidGameStateException;
-import com.blackjack.api.expection.ResourceNotFoundException;
+import com.blackjack.api.exception.InvalidGameStateException;
+import com.blackjack.api.exception.ResourceNotFoundException;
 import com.blackjack.api.game.GameLogic;
 import com.blackjack.api.model.Card;
 import com.blackjack.api.model.Deck;
